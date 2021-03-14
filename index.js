@@ -3,9 +3,16 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 
+const fetch = require('node-fetch');
+function publish(client) {
+	if (latest_scans_times.length>max_latest_scans_times/2) {
+		// do something if a new network-client appears
+	}
+}	
+
 const scan_object='192.168.1.0/24';
 const interval_seconds=300;
-const max_latest_scans_times=60;
+const max_latest_scans_times=36;
 const max_idle_hours=72;
 const port=3000;
 
@@ -80,11 +87,13 @@ function process_scan_results(data) {
 		let client = getClient(scan_client.ip,scan_client.hostname);
 		client.occurences.push(time);
 		client.last_seen=time;
+		if (client.occurences.length==1) {publish(client)};
 	}
 	housekeeping(time);
 }
 
 function getClient(ip,name,nocreate) {
+	name=name?name.replace(/\.fritz\.box/g,''):undefined;
 	var client = clients.find((e)=>{return (e.ip==ip) && ((e.name==name)||(name==undefined))});
 	if (client==undefined && !nocreate) {
 		client = new Client(name,ip);
@@ -106,13 +115,13 @@ function housekeeping(time) {
 }
 
 function create_output() {
-	let res='<pre><code>nmap | '+interval_seconds+' seconds interval | '+max_latest_scans_times+' scans history\n';
+	let res='<html><head><style type=text/css>body {font-size:1.4rem; background:#202720; color:#00ff00cc;} a {color:#00ff00cc;text-decoration:none;} ::selection {background:#fff;}</style></head><body><pre><code>nmap | '+interval_seconds+' seconds interval | '+max_latest_scans_times+' scans history\n';
 	let ip_maxlength = Math.max(...clients.map(c=>c.ip?c.ip.length:0));
 	let name_maxlength = Math.max(...clients.map(c=>c.name?c.name.length:0));
 	res+=''.padEnd(ip_maxlength+name_maxlength+max_latest_scans_times+6,'=')+'\n';
 	res+=clients.reduce((a,c)=>{
 		let title=c.portscan?JSON.stringify(c.portscan).replace(/\"/g,""):'click to scan '+c.ip;
-		let r='<a style=text-decoration:none href=/'+c.ip+' title="'+title+'">'+(c.ip||'').padEnd(ip_maxlength,' ')+'</a>   '+(c.name||'').padEnd(name_maxlength+3,' ');
+		let r='<a href=/'+c.ip+' title="'+title+'">'+(c.ip||'').padEnd(ip_maxlength,' ')+'</a>   '+(c.name||'').padEnd(name_maxlength+3,' ');
 		if (c.occurences.length<1) {
 			r+='last seen: '+c.last_seen;
 		} else {
@@ -122,6 +131,6 @@ function create_output() {
 		}
 		return a+r+'\n';
 	},'');
-	res+='</code></pre>';
+	res+='</code></pre></body></html>';
 	return res;
 }
