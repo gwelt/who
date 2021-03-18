@@ -1,0 +1,8 @@
+{
+  "scan_object": "192.168.1.0/24",
+  "interval_seconds": 300,
+  "max_latest_scans_times": 36,
+  "max_idle_hours": 72,
+  "datafile": "data/clientlist.json",
+  "port": 3000
+}
