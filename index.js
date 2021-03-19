@@ -9,6 +9,13 @@ var port = process.env.PORT || config.port || 3000;
 const Hook = require('./hook.js');
 let hook = new Hook();
 
+/*let network_interfaces=require('os').networkInterfaces();
+let interfaces = Object.keys(network_interfaces);//['wlan0'][0]['address'];
+//interfaces.
+console.log(network_interfaces);
+process.exit(0);
+*/
+
 function List_of_Clients(scan_object,interval_seconds,max_latest_scans_times,max_idle_hours,datafile) {
 	this.clients = [];
 	this.latest_scans_times = [];
@@ -101,11 +108,11 @@ List_of_Clients.prototype.housekeeping = function (time) {
 	});
 }
 
-List_of_Clients.prototype.create_output = function () {
-	let res='<html><head><style type=text/css>body {font-size:1.4rem; background:#202720; color:#00ff00cc;} a {color:#00ff00cc;text-decoration:none;} ::selection {background:#fff;}</style></head><body><pre><code>nmap | '+this.interval_seconds+' seconds interval | '+this.max_latest_scans_times+' scans history\n';
+List_of_Clients.prototype.create_output = function (requestingIP) {
+	let res='<html><head><style type=text/css>body {font-size:1.4rem; background:#202720; color:#00ff00cc;} a {color:#00ff00cc;text-decoration:none;} ::selection {background:#fff;}</style></head><body><pre><code>nmap | '+this.scan_object+' | '+this.interval_seconds+' seconds interval | '+this.max_latest_scans_times+' scans history\n';
 	let ip_maxlength = Math.max(...this.clients.map(c=>c.ip?c.ip.length:0));
 	let name_maxlength = Math.max(...this.clients.map(c=>c.name?c.name.length:0));
-	res+=''.padEnd(ip_maxlength+name_maxlength+this.max_latest_scans_times+6,'=')+'\n';
+	res+=''.padEnd(ip_maxlength+name_maxlength+this.max_latest_scans_times+6,'\u2505')+'\n';
 	
 	this.clients.sort((a,b)=>{
 		if (b.occurences.length==a.occurences.length) {
@@ -181,5 +188,5 @@ app.use('(/who)?/:ip/:force_refresh?', function(req,res) {
 });
 app.use('(/who)?/', function(req,res) {
 	res.set('Content-Type','text/html');
-	res.end(clientlist.create_output());
+	res.end(clientlist.create_output(req.connection.remoteAddress));
 });
