@@ -109,7 +109,7 @@ List_of_Clients.prototype.housekeeping = function (time) {
 }
 
 List_of_Clients.prototype.create_output = function (requestingIP) {
-	let res='<html><head><style type=text/css>body {font-size:1.4rem; background:#202720; color:#00ff00cc;} a {color:#00ff00cc;text-decoration:none;} ::selection {background:#fff;}</style></head><body><pre><code>nmap | '+this.scan_object+' | '+this.interval_seconds+' seconds interval | '+this.max_latest_scans_times+' scans history\n';
+	let res='<html><head><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet"><style type=text/css>code {font-family: "Share Tech Mono", monospace;} div {margin:3% 5%} body {font-size:1.4rem; background:#021d02; color:#00ff00cc;} a {color:#00ff00cc;text-decoration:none;} ::selection {background:#fff;}</style></head><body><div><pre><code>nmap | '+this.scan_object+' | '+this.interval_seconds+' seconds interval | '+this.max_latest_scans_times+' scans history\n';
 	let ip_maxlength = Math.max(...this.clients.map(c=>c.ip?c.ip.length:0));
 	let name_maxlength = Math.max(...this.clients.map(c=>c.name?c.name.length:0));
 	res+=''.padEnd(ip_maxlength+name_maxlength+this.max_latest_scans_times+6,'\u2505')+'\n';
@@ -138,7 +138,7 @@ List_of_Clients.prototype.create_output = function (requestingIP) {
 		}
 		return a+r+'\n';
 	},'');
-	res+='</code></pre></body></html>';
+	res+='</code></pre></div></body></html>';
 	return res;
 }
 
