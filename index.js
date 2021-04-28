@@ -9,13 +9,6 @@ var port = process.env.PORT || config.port || 3000;
 const Hook = require('./hook.js');
 let hook = new Hook();
 
-/*let network_interfaces=require('os').networkInterfaces();
-let interfaces = Object.keys(network_interfaces);//['wlan0'][0]['address'];
-//interfaces.
-console.log(network_interfaces);
-process.exit(0);
-*/
-
 function List_of_Clients(scan_object,interval_seconds,max_latest_scans_times,max_idle_hours,datafile) {
 	this.clients = [];
 	this.latest_scans_times = [];
@@ -109,11 +102,10 @@ List_of_Clients.prototype.housekeeping = function (time) {
 }
 
 List_of_Clients.prototype.create_output = function (requestingIP) {
-	let res='<html><head><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet"><style type=text/css>code {font-family: "Share Tech Mono", monospace;} div {margin:3% 5%} body {font-size:1.4rem; background:#021d02; color:#00ff00cc;} a {color:#00ff00cc;text-decoration:none;} ::selection {background:#fff;}</style></head><body><div><pre><code>nmap | '+this.scan_object+' | '+this.interval_seconds+' seconds interval | '+this.max_latest_scans_times+' scans history\n';
+	let res='<html><head><style type=text/css>body {background-color: #1c2d2c; nobackground-image: radial-gradient(rgba(0, 150, 0, 0.75), black 120%); height: 100vh; margin: 0; overflow: hidden; padding: 0.6rem; color:white; font: 1.6rem monospace; text-shadow: 0 0 1px #C8C8C8;} body::after {content: ""; position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px); pointer-events: none;} ::selection {background: #0080FF; text-shadow: none;} pre {margin: 0;} div {margin:3% 5%} a {color:white; text-decoration:none;} #terminal__prompt--cursor {display: block; height:1em; width:0.6em; animation: blink 1200ms linear infinite;} @keyframes blink {0% {background: #ffffff; text-shadow: 0 0 1px #C8C8C8;} 55% {background: #ffffff; text-shadow: 0 0 1px #C8C8C8;} 60% {background: transparent; text-shadow: 0 0 1px transparent;} 99% {background: transparent; text-shadow: 0 0 1px transparent;} 100% {background: #ffffff; text-shadow: 0 0 1px #C8C8C8;}} </style></head><body><div><pre><output><span onclick=location.reload()>nmap</span> | '+this.scan_object+' | '+this.interval_seconds+' seconds interval | '+this.max_latest_scans_times+' scans history\n';
 	let ip_maxlength = Math.max(...this.clients.map(c=>c.ip?c.ip.length:0));
 	let name_maxlength = Math.max(...this.clients.map(c=>c.name?c.name.length:0));
 	res+=''.padEnd(ip_maxlength+name_maxlength+this.max_latest_scans_times+6,'\u2505')+'\n';
-	
 	this.clients.sort((a,b)=>{
 		if (b.occurences.length==a.occurences.length) {
 			if (b.occurences.length==0 && b.last_seen.getTime()!==a.last_seen.getTime()) {
@@ -138,7 +130,8 @@ List_of_Clients.prototype.create_output = function (requestingIP) {
 		}
 		return a+r+'\n';
 	},'');
-	res+='</code></pre></div></body></html>';
+	res+='<span id="terminal__prompt--cursor"></span>';
+	res+='</output></pre></div></body></html>';
 	return res;
 }
 
